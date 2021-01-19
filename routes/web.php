@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('admin/login', function () {
+    return view('admin/login', ['title' => "Login | " . config('variable.webname')]);
+})->name('admin.login');
+Route::post('admin/auth', [AdminController::class, 'auth'])->name('admin.auth');
+Route::get('admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+Route::group(['prefix' => 'admin',  'middleware' => 'adminauth'], function () {
+    Route::get('/', function () {
+        return view('admin/dashboard', ['title' => "Dashboard | " . config('variable.webname')]);
+    })->name('admin.dashboard');
 });
