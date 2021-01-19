@@ -36,13 +36,13 @@
                with font-awesome or any other icon font library -->
           <li class="nav-header">MENU UTAMA</li>
           <li class="nav-item">
-            <a href="#" class="nav-link {{ Request::segment(2) == '' ? 'active':'' }}">
+            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ Request::segment(2) == '' ? 'active':'' }}">
               <i class="fas fa-tachometer-alt nav-icon"></i>
               <p>Dashboard</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link {{ Request::segment(2) == 'admin' ? 'active':'' }}">
+            <a href="{{ route('admin.admin.index') }}" class="nav-link {{ Request::segment(2) == 'admin' ? 'active':'' }}">
               <i class="fas fa-user nav-icon"></i>
               <p>Admin</p>
             </a>

@@ -28,4 +28,10 @@ Route::group(['prefix' => 'admin',  'middleware' => 'adminauth'], function () {
     Route::get('/', function () {
         return view('admin/dashboard', ['title' => "Dashboard | " . config('variable.webname')]);
     })->name('admin.dashboard');
+    //Admin
+    Route::get('admin', [AdminController::class, 'index'])->name('admin.admin.index');
+    Route::post('admin/create', [AdminController::class, 'create'])->name('admin.admin.create');
+    Route::put('admin/update', [AdminController::class, 'update'])->name('admin.admin.update');
+    Route::delete('admin/delete', [AdminController::class, 'delete'])->name('admin.admin.delete');
+    Route::post('admin/data', [AdminController::class, 'data'])->name('admin.admin.data');
 });

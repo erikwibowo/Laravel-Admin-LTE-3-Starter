@@ -22,7 +22,7 @@ class CreateAdminsTable extends Migration
             $table->string('address');
             $table->string('level');
             $table->tinyInteger('status')->default(0);
-            $table->dateTime('login_at')->default(null);
+            $table->dateTime('login_at')->nullable();
             $table->timestamps();
         });
     }
