@@ -26,7 +26,7 @@ Route::get('admin/logout', [AdminController::class, 'logout'])->name('admin.logo
 
 Route::group(['prefix' => 'admin',  'middleware' => 'adminauth'], function () {
     Route::get('/', function () {
-        return view('admin/dashboard', ['title' => "Dashboard | " . config('variable.webname')]);
+        return view('admin/dashboard', ['title' => "Dashboard"]);
     })->name('admin.dashboard');
     //Admin
     Route::get('admin', [AdminController::class, 'index'])->name('admin.admin.index');

@@ -30,7 +30,7 @@ class AdminController extends Controller
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
-        $x['title'] = "Data Admin | " . config('variable.webname');
+        $x['title'] = "Data Admin";
         return view('admin/admin', $x);
     }
 
@@ -151,7 +151,7 @@ class AdminController extends Controller
                     ]);
                     Admin::where("id", $data->id)->update(['login_at' => now()]);
                     session()->flash('notif', 'Selamat Datang ' . $data->name);
-                    session()->flash('type', 'success');
+                    session()->flash('type', 'info');
                     return redirect('admin');
                 } else {
                     session()->flash('type', 'error');
