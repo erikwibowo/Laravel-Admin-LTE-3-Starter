@@ -14,6 +14,7 @@
                     <table class="table table-bordered table-hover table-striped datatable yajra-datatable">
                         <thead>
                             <tr>
+                                <th>Photo</th>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Address</th>
@@ -40,6 +41,10 @@
             serverSide: true,
             ajax: "{{ route('admin.admin.index') }}",
             columns: [
+                {
+                    data: 'photo',
+                    name: 'photo'
+                },
                 {
                     data: 'name',
                     name: 'name'
@@ -96,6 +101,7 @@
                     $("#address").val(data.address);
                     $("#status").val(data.status);
                     $("#level").val(data.level);
+                    $("#photo").attr("src", "{{ asset('data_file') }}/"+data.photo);
                     $("#id").val(data.id);
                 },
             });
@@ -125,6 +131,18 @@
         <div class="modal-body">
             <form action="{{ route('admin.admin.create') }}" method="POST">
                 @csrf
+                <div class="input-group">
+                    <label>Photo</label>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input accept=".jpg,.jpeg,.png" type="file" class="custom-file-input @error('photo') is-invalid @enderror" required>
+                            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                        </div>
+                        @error('photo')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
                 <div class="input-group">
                     <label>Name</label>
                     <div class="input-group">
@@ -203,9 +221,24 @@
             </button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('admin.admin.update') }}" method="POST">
+            <form action="{{ route('admin.admin.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+                <center>
+                    <img class="img-circle" src="" id="photo" style="height: auto; width: 10rem">
+                </center>
+                <div class="input-group">
+                    <label>Photo</label>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input accept=".jpg,.jpeg,.png" type="file" class="custom-file-input @error('photo') is-invalid @enderror">
+                            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                        </div>
+                        @error('photo')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
                 <div class="input-group">
                     <label>Name</label>
                     <div class="input-group">
@@ -298,7 +331,7 @@
             </button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('admin.admin.delete') }}" method="POST">
+            <form action="{{ route('admin.admin.delete') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('DELETE')
                 <p class="modal-text">Apakah anda yakin akan menghapus? <b id="delete-data"></b></p>

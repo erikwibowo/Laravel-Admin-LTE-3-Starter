@@ -21,6 +21,7 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('admin'), // password
             'phone' => '081510815414',
             'address' => 'Jalan Pahlawan 51161 Pekalongan Jawa Tengah',
+            'photo' => 'profil.jpg',
             'level' => "SUPER ADMIN",
             'status' => 1,
             'login_at' => now(),

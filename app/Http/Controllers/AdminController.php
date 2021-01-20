@@ -27,7 +27,10 @@ class AdminController extends Controller
                     }
                     return $status;
                 })
-                ->rawColumns(['action', 'status'])
+                ->addColumn('photo', function($row){
+                    return '<img src="'.asset("data_file/".$row->photo).'" class="img-circle" style="width: 3rem; height:auto">';
+                })
+                ->rawColumns(['action', 'status','photo'])
                 ->make(true);
         }
         $x['title'] = "Data Admin";
