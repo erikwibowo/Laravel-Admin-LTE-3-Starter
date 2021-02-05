@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="{{ asset('template/admin/dist/css/adminlte.min.css') }}">
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="{{ asset('template/admin/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
@@ -49,9 +50,18 @@
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+        <div class="input-group mb-3">
+          <div class="g-recaptcha text-center" data-sitekey="{{ env('GOOGLE_RECHATPTCHA_SITEKEY') }}" data-callback="enableBtn"></div>
+        </div>
+        <script type="text/javascript">
+          function enableBtn(){
+              document.getElementById("btnlogin").disabled = false;
+          }
+          document.querySelector('body').classList.add(localStorage.getItem('theme'));
+        </script>
         <div class="row">
           <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <button type="submit" id="btnlogin" disabled class="btn btn-primary btn-block">Sign In</button>
           </div>
           <!-- /.col -->
         </div>

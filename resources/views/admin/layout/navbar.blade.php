@@ -112,13 +112,32 @@
         </div>
       </li> --}}
       <li class="nav-item">
-        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-          <i class="fas fa-expand-arrows-alt"></i>
+        <a class="nav-link" id="btntheme" role="button">
+          <i id="icontheme" class="fas fa-sun"></i>
         </a>
       </li>
+      <script>
+        localStorage.getItem('theme') == "light" || localStorage.getItem('theme') == null ? $("#icontheme").attr("class","fas fa-sun"):$("#icontheme").attr("class","fas fa-moon");
+        document.querySelector('body').classList.add(localStorage.getItem('theme'));
+        $(document).ready(function(){
+          $("#btntheme").on("click", function(){
+            if (localStorage.getItem('theme') == 'light' || localStorage.getItem('theme') == null) {
+              localStorage.setItem('theme', 'dark-mode')
+              document.querySelector('body').classList.add(localStorage.getItem('theme'));
+              document.querySelector('body').classList.remove('light');
+              $("#icontheme").attr("class","fas fa-moon");
+            }else{
+              localStorage.setItem('theme', 'light')
+              document.querySelector('body').classList.add(localStorage.getItem('theme'));
+              document.querySelector('body').classList.remove('dark-mode');
+              $("#icontheme").attr("class","fas fa-sun");
+            }
+          });
+        });
+      </script>
       <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
+        <a class="nav-link" href="#" target="_bkank" role="button">
+          <i class="fas fa-globe"></i>
         </a>
       </li>
     </ul>

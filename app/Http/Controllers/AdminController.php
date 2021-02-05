@@ -6,7 +6,7 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use DataTables;
+use Yajra\DataTables\DataTables;
 
 class AdminController extends Controller
 {
@@ -131,6 +131,7 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required',
             'password' => 'required',
+            'g-recaptcha-response' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -140,37 +141,46 @@ class AdminController extends Controller
         }
         $email = $request->input('email');
         $password = $request->input('password');
+        $response_key = $request->input('g-recaptcha-response');
+        $secret_key = env('GOOGLE_RECHATPTCHA_SECRETKEY');
+
+        $verify = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret_key . '&response=' . $response_key);
+        $response = json_decode($verify);
+
         $data = Admin::where(['email' => $email]);
-        if ($data->count() == 1) {
-            $data = $data->first();
-            if ($data->status == 1) {
-                if (Hash::check($password, $data->password)) {
-                    session([
-                        'id' => $data->id,
-                        'name' => $data->name,
-                        'level' => $data->level,
-                        'email' => $data->email,
-                        'login_status' => true
-                    ]);
-                    Admin::where("id", $data->id)->update(['login_at' => now()]);
-                    session()->flash('notif', 'Selamat Datang ' . $data->name);
-                    session()->flash('type', 'info');
-                    return redirect('admin');
+        if ($response->success) {
+            if ($data->count() == 1) {
+                $data = $data->first();
+                if ($data->status == 1) {
+                    if (Hash::check($password, $data->password)) {
+                        session([
+                            'id' => $data->id,
+                            'name' => $data->name,
+                            'level' => $data->level,
+                            'email' => $data->email,
+                            'login_status' => true
+                        ]);
+                        Admin::where("id", $data->id)->update(['login_at' => now()]);
+                        session()->flash('notif', 'Selamat Datang ' . $data->name);
+                        session()->flash('type', 'info');
+                        return redirect('admin');
+                    } else {
+                        session()->flash('type', 'error');
+                        session()->flash('notif', 'Email atau password anda tidak sesuai');
+                    }
                 } else {
                     session()->flash('type', 'error');
-                    session()->flash('notif', 'Email atau password anda tidak sesuai');
-                    return redirect('admin/login');
+                    session()->flash('notif', 'Akun anda nonaktif. Silahkan hubungi administrator');
                 }
             } else {
                 session()->flash('type', 'error');
-                session()->flash('notif', 'Akun anda nonaktif. Silahkan hubungi administrator');
-                return redirect('admin/login');
+                session()->flash('notif', 'Email atau password anda tidak sesuai');
             }
-        } else {
+        }else{
             session()->flash('type', 'error');
-            session()->flash('notif', 'Email atau password anda tidak sesuai');
-            return redirect('admin/login');
+            session()->flash('notif', 'Ups! Sepertinya ada yang salah');
         }
+        return redirect('admin/login');
     }
 
     public function logout()
