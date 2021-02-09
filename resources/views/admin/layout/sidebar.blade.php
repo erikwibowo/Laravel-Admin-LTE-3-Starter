@@ -34,19 +34,21 @@
         <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          <li class="nav-header">MENU UTAMA</li>
-          <li class="nav-item">
-            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ Request::segment(2) == '' ? 'active':'' }}">
-              <i class="fas fa-tachometer-alt nav-icon"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('admin.admin.index') }}" class="nav-link {{ Request::segment(2) == 'admin' ? 'active':'' }}">
-              <i class="fas fa-user nav-icon"></i>
-              <p>Admin</p>
-            </a>
-          </li>
+          <?php
+            $menu = DB::select("SELECT * FROM menus");
+          ?>
+          @foreach ($menu as $m)
+              @if ($m->type == 'title')
+                  <li class="nav-header">{{ $m->menu }}</li>
+              @elseif($m->type == 'menu')
+                  <li class="nav-item">
+                    <a href="{{ route($m->route) }}" class="nav-link {{ Request::segment(2) == $m->uri ? 'active':'' }}">
+                      <i class="{{ $m->icon }} nav-icon"></i>
+                      <p>{{ $m->menu }}</p>
+                    </a>
+                  </li>
+              @endif
+          @endforeach
           <li class="nav-header">MULTI LEVEL EXAMPLE</li>
           <li class="nav-item">
             <a href="#" class="nav-link">
