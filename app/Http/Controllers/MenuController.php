@@ -12,7 +12,7 @@ class MenuController extends Controller
     public function index(){
         $x['title']     = "Menu";
         $x['data']      = Menu::get();
-        return view('admin\menu', $x);
+        return view('admin.menu', $x);
     }
 
     public function create(Request $request)
@@ -20,6 +20,7 @@ class MenuController extends Controller
         $validator = Validator::make($request->all(), [
             'menu' => 'required',
             'type' => 'required',
+            'urut' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -34,6 +35,7 @@ class MenuController extends Controller
             'icon' => $request->icon,
             'route' => $request->route,
             'type' => $request->type,
+            'urut' => $request->urut,
             'created_at' => now()
         ];
         Menu::insert($data);
@@ -47,6 +49,7 @@ class MenuController extends Controller
         $validator = Validator::make($request->all(), [
             'menu' => 'required',
             'type' => 'required',
+            'urut' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -60,7 +63,8 @@ class MenuController extends Controller
             'uri' => Str::slug($request->menu, '-'),
             'icon' => $request->icon,
             'route' => $request->route,
-            'type' => $request->type
+            'type' => $request->type,
+            'urut' => $request->urut
         ];
         Menu::where(['id' => $request->id])->update($data);
         session()->flash('type', 'success');

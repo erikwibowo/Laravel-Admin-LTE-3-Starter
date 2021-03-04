@@ -20,6 +20,7 @@ class CreateMenusTable extends Migration
             $table->string('icon')->nullable(true);
             $table->string('uri')->nullable(true);
             $table->string('route')->nullable(true);
+            $table->tinyInteger('urut')->default(0);
             $table->timestamps();
         });
     }

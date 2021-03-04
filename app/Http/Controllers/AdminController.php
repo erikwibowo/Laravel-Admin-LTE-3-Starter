@@ -34,7 +34,7 @@ class AdminController extends Controller
                 ->make(true);
         }
         $x['title'] = "Data Admin";
-        return view('admin/admin', $x);
+        return view('admin.admin', $x);
     }
 
     public function update(Request $request)

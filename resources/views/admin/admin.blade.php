@@ -5,13 +5,13 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <a href="#" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-tambah"><i class="fas fa-plus"></i> Tambah</a>
+                        <a href="#" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-tambah" data-backdrop="static" data-keyboard="false"><i class="fas fa-plus"></i> Tambah</a>
                     </h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
                     <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-striped datatable yajra-datatable">
+                    <table class="table table-bordered table-hover table-striped datatable yajra-datatable" style="width: 100%">
                         <thead>
                             <tr>
                                 <th>Photo</th>
@@ -81,11 +81,7 @@
     $(document).ready(function() {
         $(document).on("click", '.btn-edit', function() {
             let id = $(this).attr("data-id");
-            $('#modal-edit').modal('show');
-            $('#modal-edit').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
+            $('#modal-loading').modal({backdrop: 'static', keyboard: false, show: true});
             $.ajax({
                 url: "{{ route('admin.admin.data') }}",
                 type: "POST",
@@ -103,6 +99,8 @@
                     $("#level").val(data.level);
                     $("#photo").attr("src", "{{ asset('data_file') }}/"+data.photo);
                     $("#id").val(data.id);
+                    $('#modal-loading').modal('hide');
+                    $('#modal-edit').modal({backdrop: 'static', keyboard: false, show: true});
                 },
             });
         });
@@ -111,11 +109,7 @@
             let name = $(this).attr("data-name");
             $("#did").val(id);
             $("#delete-data").html(name);
-            $('#modal-delete').modal('show');
-            $('#modal-delete').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
+            $('#modal-delete').modal({backdrop: 'static', keyboard: false, show: true});
         });
     });
 </script>
