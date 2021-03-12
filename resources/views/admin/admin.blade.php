@@ -97,7 +97,7 @@
                     $("#address").val(data.address);
                     $("#status").val(data.status);
                     $("#level").val(data.level);
-                    $("#photo").attr("src", "{{ asset('data_file') }}/"+data.photo);
+                    $("#photo").attr("src", "{{ asset('admins') }}/"+data.photo);
                     $("#id").val(data.id);
                     $('#modal-loading').modal('hide');
                     $('#modal-edit').modal({backdrop: 'static', keyboard: false, show: true});
@@ -112,6 +112,20 @@
             $('#modal-delete').modal({backdrop: 'static', keyboard: false, show: true});
         });
     });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#photo').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#ph").on("change", function(){
+        readURL(this);
+    });
 </script>
 <div class="modal fade" id="modal-tambah">
     <div class="modal-dialog modal-lg">
@@ -123,13 +137,13 @@
             </button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('admin.admin.create') }}" method="POST">
+            <form action="{{ route('admin.admin.create') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group">
                     <label>Photo</label>
                     <div class="input-group">
                         <div class="custom-file">
-                            <input accept=".jpg,.jpeg,.png" type="file" class="custom-file-input @error('photo') is-invalid @enderror" required>
+                            <input accept=".jpg,.jpeg,.png" type="file" name="photo" class="custom-file-input @error('photo') is-invalid @enderror" required>
                             <label class="custom-file-label" for="exampleInputFile">Choose file</label>
                         </div>
                         @error('photo')
@@ -225,7 +239,7 @@
                     <label>Photo</label>
                     <div class="input-group">
                         <div class="custom-file">
-                            <input accept=".jpg,.jpeg,.png" type="file" class="custom-file-input @error('photo') is-invalid @enderror">
+                            <input accept=".jpg,.jpeg,.png" type="file" name="photo" id="ph" class="custom-file-input @error('photo') is-invalid @enderror">
                             <label class="custom-file-label" for="exampleInputFile">Choose file</label>
                         </div>
                         @error('photo')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
@@ -28,7 +29,7 @@ class AdminController extends Controller
                     return $status;
                 })
                 ->addColumn('photo', function($row){
-                    return '<img src="'.asset("data_file/".$row->photo).'" class="img-circle" style="width: 3rem; height:auto">';
+                    return '<img src="'.asset("admins/".$row->photo).'" class="img-circle" style="width: 3rem; height:auto">';
                 })
                 ->rawColumns(['action', 'status','photo'])
                 ->make(true);
@@ -37,52 +38,10 @@ class AdminController extends Controller
         return view('admin.admin', $x);
     }
 
-    public function update(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'name' => 'required',
-            'phone' => 'required',
-            'address' => 'required',
-            'level' => 'required',
-            'status' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect('admin/admin')
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        if (empty($request->input('password'))) {
-            $data = [
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'phone' => $request->input('phone'),
-                'address' => $request->input('address'),
-                'level' => $request->input('level'),
-                'status' => $request->input('status')
-            ];
-        } else {
-            $data = [
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'phone' => $request->input('phone'),
-                'address' => $request->input('address'),
-                'password' => Hash::make($request->input('password')),
-                'level' => $request->input('level'),
-                'status' => $request->input('status')
-            ];
-        }
-        Admin::where('id', $request->input('id'))->update($data);
-        session()->flash('type', 'success');
-        session()->flash('notif', 'Data berhasil disimpan');
-        return redirect('admin/admin');
-    }
-
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'phone' => 'required',
             'email' => 'required|email|unique:admins',
             'name' => 'required',
@@ -97,18 +56,92 @@ class AdminController extends Controller
                 ->withInput();
         }
 
+        $imageName = "admin_".time() . '.' . $request->photo->extension();
+
         $data = [
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'phone' => $request->input('phone'),
+            'photo' => $imageName,
             'address' => $request->input('address'),
             'password' => Hash::make($request->input('password')),
             'level' => $request->input('level'),
             'created_at' => now()
         ];
-        Admin::insert($data);
-        session()->flash('type', 'success');
-        session()->flash('notif', 'Data berhasil ditambah');
+        if (Admin::insert($data)) {
+            $request->photo->move(public_path('admins'), $imageName);
+            session()->flash('type', 'success');
+            session()->flash('notif', 'Data berhasil ditambah');
+        }else{
+            session()->flash('type', 'error');
+            session()->flash('notif', 'Data gagal ditambah');
+        }
+        return redirect('admin/admin');
+    }
+
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'photo' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'email' => 'required|email',
+            'name' => 'required',
+            'phone' => 'required',
+            'address' => 'required',
+            'level' => 'required',
+            'status' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('admin/admin')
+            ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = [
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+            'level' => $request->input('level'),
+            'status' => $request->input('status')
+        ];
+
+        if ($request->hasFile('photo')) { //Jika ada foto
+            $imageName = "admin_" . time() . '.' . $request->photo->extension();
+            if (empty($request->password)) {
+                $data = [
+                    'photo' => $imageName
+                ];
+            }else{
+                $data = [
+                    'photo' => $imageName,
+                    'password' => Hash::make($request->input('password'))
+                ];
+            }
+            $old = Admin::where(['id' => $request->id])->first();
+            if (Admin::where('id', $request->input('id'))->update($data)) {
+                File::delete('admins/' . $old->photo);
+                $request->photo->move(public_path('admins'), $imageName);
+                session()->flash('type', 'success');
+                session()->flash('notif', 'Data berhasil disimpan');
+            } else {
+                session()->flash('type', 'error');
+                session()->flash('notif', 'Data gagal disimpan');
+            }
+        }else{
+            if (!empty($request->password)) {
+                $data = [
+                    'password' => Hash::make($request->input('password'))
+                ];
+            }
+            if (Admin::where('id', $request->input('id'))->update($data)) {
+                session()->flash('type', 'success');
+                session()->flash('notif', 'Data berhasil disimpan');
+            } else {
+                session()->flash('type', 'error');
+                session()->flash('notif', 'Data gagal disimpan');
+            }
+        }
         return redirect('admin/admin');
     }
 
@@ -120,9 +153,15 @@ class AdminController extends Controller
     public function delete(Request $request)
     {
         $id = $request->input('id');
-        Admin::where(['id' => $id])->delete();
-        session()->flash('notif', 'Data berhasil dihapus');
-        session()->flash('type', 'success');
+        $old = Admin::where(['id' => $id])->first();
+        if (Admin::where(['id' => $id])->delete()) {
+            File::delete('admins/' . $old->photo);
+            session()->flash('notif', 'Data berhasil dihapus');
+            session()->flash('type', 'success');
+        }else{
+            session()->flash('notif', 'Data gagal dihapus');
+            session()->flash('type', 'error');
+        }
         return redirect('admin/admin');
     }
 

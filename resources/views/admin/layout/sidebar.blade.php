@@ -9,16 +9,20 @@
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        @php
+          $id = session('id');
+          $dtadmin = DB::table('admins')->where('id', $id)->first();
+        @endphp
         <div class="image">
-          <img src="{{ asset('template/admin/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
+          <img src="{{ asset('admins/'.$dtadmin->photo) }}" width="160" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">{{ session('name') }}</a>
+          <a href="#" class="d-block">{{ $dtadmin->name }}</a>
         </div>
       </div>
 
       <!-- SidebarSearch Form -->
-      <div class="form-inline">
+      {{-- <div class="form-inline">
         <div class="input-group" data-widget="sidebar-search">
           <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
@@ -27,7 +31,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> --}}
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
@@ -51,7 +55,7 @@
           @endforeach
           <li class="nav-header"></li>
           <li class="nav-item">
-            <a href="#" class="nav-link bg-danger" data-toggle="modal" data-target="#modal-logout">
+            <a href="#" class="nav-link bg-danger" data-toggle="modal" data-target="#modal-logout" data-backdrop="static" data-keyboard="false">
               <i class="fas fa-lock nav-icon"></i>
               <p>KELUAR</p>
             </a>
