@@ -14,7 +14,7 @@
           $dtadmin = DB::table('admins')->where('id', $id)->first();
         @endphp
         <div class="image">
-          <img src="{{ asset('admins/'.$dtadmin->photo) }}" width="160" class="img-circle elevation-2" alt="User Image">
+          <img src="{{ asset('storage/admins/thumbnail/'.$dtadmin->thumb) }}" width="160" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="#" class="d-block">{{ $dtadmin->name }}</a>

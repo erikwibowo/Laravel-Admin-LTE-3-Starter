@@ -6,8 +6,10 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
+use Intervention\Image\Facades\Image;
 
 class AdminController extends Controller
 {
@@ -29,7 +31,7 @@ class AdminController extends Controller
                     return $status;
                 })
                 ->addColumn('photo', function($row){
-                    return '<img src="'.asset("admins/".$row->photo).'" class="img-circle" style="width: 3rem; height:auto">';
+                    return '<img src="'.asset("storage/admins/thumbnail/".$row->thumb).'" class="img-circle" style="width: 3rem; height:auto">';
                 })
                 ->rawColumns(['action', 'status','photo'])
                 ->make(true);
@@ -56,20 +58,28 @@ class AdminController extends Controller
                 ->withInput();
         }
 
-        $imageName = "admin_".time() . '.' . $request->photo->extension();
+        $filenametostore = "admin_".time() . '.' . $request->photo->extension();
+        $thumbnailstore = "admin" . '_thumb_' . time() . '.' . $request->photo->extension();
 
         $data = [
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'phone' => $request->input('phone'),
-            'photo' => $imageName,
+            'photo' => $filenametostore,
+            'thumb' => $thumbnailstore,
             'address' => $request->input('address'),
             'password' => Hash::make($request->input('password')),
             'level' => $request->input('level'),
             'created_at' => now()
         ];
         if (Admin::insert($data)) {
-            $request->photo->move(public_path('admins'), $imageName);
+            //Upload File
+            $request->photo->storeAs('public/admins', $filenametostore);
+            $request->photo->storeAs('public/admins/thumbnail', $thumbnailstore);
+            //create thumbnail
+            $thumbnail = public_path('storage/admins/thumbnail/' . $thumbnailstore);
+            $this->createThumbnail($thumbnail, 300, 185);
+
             session()->flash('type', 'success');
             session()->flash('notif', 'Data berhasil ditambah');
         }else{
@@ -77,6 +87,14 @@ class AdminController extends Controller
             session()->flash('notif', 'Data gagal ditambah');
         }
         return redirect('admin/admin');
+    }
+
+    public function createThumbnail($path, $width, $height)
+    {
+        $img = Image::make($path)->resize($width, $height, function ($constraint) {
+            $constraint->aspectRatio();
+        });
+        $img->save($path);
     }
 
     public function update(Request $request)
@@ -107,21 +125,31 @@ class AdminController extends Controller
         ];
 
         if ($request->hasFile('photo')) { //Jika ada foto
-            $imageName = "admin_" . time() . '.' . $request->photo->extension();
+            $filenametostore = "admin_" . time() . '.' . $request->photo->extension();
+            $thumbnailstore = "admin" . '_thumb_' . time() . '.' . $request->photo->extension();
             if (empty($request->password)) {
                 $data = [
-                    'photo' => $imageName
+                    'photo' => $filenametostore,
+                    'thumb' => $thumbnailstore,
                 ];
             }else{
                 $data = [
-                    'photo' => $imageName,
+                    'photo' => $filenametostore,
+                    'thumb' => $thumbnailstore,
                     'password' => Hash::make($request->input('password'))
                 ];
             }
             $old = Admin::where(['id' => $request->id])->first();
             if (Admin::where('id', $request->input('id'))->update($data)) {
-                File::delete('admins/' . $old->photo);
-                $request->photo->move(public_path('admins'), $imageName);
+                //delete old photo
+                File::delete('storage/admins/' . $old->photo);
+                File::delete('storage/admins/thumbnail/' . $old->thumb);
+                //Upload File
+                $request->photo->storeAs('public/admins', $filenametostore);
+                $request->photo->storeAs('public/admins/thumbnail', $thumbnailstore);
+                //create thumbnail
+                $thumbnail = public_path('storage/admins/thumbnail/' . $thumbnailstore);
+                $this->createThumbnail($thumbnail, 300, 185);
                 session()->flash('type', 'success');
                 session()->flash('notif', 'Data berhasil disimpan');
             } else {
@@ -155,7 +183,8 @@ class AdminController extends Controller
         $id = $request->input('id');
         $old = Admin::where(['id' => $id])->first();
         if (Admin::where(['id' => $id])->delete()) {
-            File::delete('admins/' . $old->photo);
+            File::delete('storage/admins/' . $old->photo);
+            File::delete('storage/admins/thumbnail/' . $old->thumb);
             session()->flash('notif', 'Data berhasil dihapus');
             session()->flash('type', 'success');
         }else{

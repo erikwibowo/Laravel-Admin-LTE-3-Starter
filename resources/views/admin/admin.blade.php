@@ -97,7 +97,7 @@
                     $("#address").val(data.address);
                     $("#status").val(data.status);
                     $("#level").val(data.level);
-                    $("#photo").attr("src", "{{ asset('admins') }}/"+data.photo);
+                    $("#photo").attr("src", "{{ asset('storage/admins') }}/"+data.photo);
                     $("#id").val(data.id);
                     $('#modal-loading').modal('hide');
                     $('#modal-edit').modal({backdrop: 'static', keyboard: false, show: true});

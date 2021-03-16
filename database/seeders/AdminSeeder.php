@@ -22,6 +22,7 @@ class AdminSeeder extends Seeder
             'phone' => '081510815414',
             'address' => 'Jalan Pahlawan 51161 Pekalongan Jawa Tengah',
             'photo' => 'profil.jpg',
+            'photo' => 'profil.jpg',
             'level' => "SUPER ADMIN",
             'status' => 1,
             'login_at' => now(),
