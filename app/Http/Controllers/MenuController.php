@@ -38,9 +38,14 @@ class MenuController extends Controller
             'urut' => $request->urut,
             'created_at' => now()
         ];
-        Menu::insert($data);
-        session()->flash('type', 'success');
-        session()->flash('notif', 'Data berhasil ditambah');
+        try {
+            Menu::insert($data);
+            session()->flash('type', 'success');
+            session()->flash('notif', 'Data berhasil ditambah');
+        } catch (\Throwable $th) {
+            session()->flash('type', 'error');
+            session()->flash('notif', $th->getMessage());
+        }
         return redirect('admin/menu');
     }
 
@@ -66,9 +71,14 @@ class MenuController extends Controller
             'type' => $request->type,
             'urut' => $request->urut
         ];
-        Menu::where(['id' => $request->id])->update($data);
-        session()->flash('type', 'success');
-        session()->flash('notif', 'Data berhasil disimpan');
+        try {
+            Menu::where(['id' => $request->id])->update($data);
+            session()->flash('type', 'success');
+            session()->flash('notif', 'Data berhasil disimpan');
+        } catch (\Throwable $th) {
+            session()->flash('type', 'error');
+            session()->flash('notif', $th->getMessage());
+        }
         return redirect('admin/menu');
     }
 
@@ -80,9 +90,14 @@ class MenuController extends Controller
     public function delete(Request $request)
     {
         $id = $request->input('id');
-        Menu::where(['id' => $id])->delete();
-        session()->flash('notif', 'Data berhasil dihapus');
-        session()->flash('type', 'success');
+        try {
+            Menu::where(['id' => $id])->delete();
+            session()->flash('notif', 'Data berhasil dihapus');
+            session()->flash('type', 'success');
+        } catch (\Throwable $th) {
+            session()->flash('type', 'error');
+            session()->flash('notif', $th->getMessage());
+        }
         return redirect('admin/menu');
     }
 }

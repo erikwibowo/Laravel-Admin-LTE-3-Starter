@@ -140,7 +140,8 @@ class AdminController extends Controller
                 ];
             }
             $old = Admin::where(['id' => $request->id])->first();
-            if (Admin::where('id', $request->input('id'))->update($data)) {
+            try {
+                Admin::where('id', $request->input('id'))->update($data);
                 //delete old photo
                 File::delete('storage/admins/' . $old->photo);
                 File::delete('storage/admins/thumbnail/' . $old->thumb);
@@ -152,9 +153,9 @@ class AdminController extends Controller
                 $this->createThumbnail($thumbnail, 300, 185);
                 session()->flash('type', 'success');
                 session()->flash('notif', 'Data berhasil disimpan');
-            } else {
+            } catch (\Throwable $th) {
                 session()->flash('type', 'error');
-                session()->flash('notif', 'Data gagal disimpan');
+                session()->flash('notif', $th->getMessage());
             }
         }else{
             if (!empty($request->password)) {
@@ -162,12 +163,13 @@ class AdminController extends Controller
                     'password' => Hash::make($request->input('password'))
                 ];
             }
-            if (Admin::where('id', $request->input('id'))->update($data)) {
+            try {
+                Admin::where('id', $request->input('id'))->update($data);
                 session()->flash('type', 'success');
                 session()->flash('notif', 'Data berhasil disimpan');
-            } else {
+            } catch (\Throwable $th) {
                 session()->flash('type', 'error');
-                session()->flash('notif', 'Data gagal disimpan');
+                session()->flash('notif', $th->getMessage());
             }
         }
         return redirect('admin/admin');
@@ -182,13 +184,14 @@ class AdminController extends Controller
     {
         $id = $request->input('id');
         $old = Admin::where(['id' => $id])->first();
-        if (Admin::where(['id' => $id])->delete()) {
+        try {
+            Admin::where(['id' => $id])->delete();
             File::delete('storage/admins/' . $old->photo);
             File::delete('storage/admins/thumbnail/' . $old->thumb);
             session()->flash('notif', 'Data berhasil dihapus');
             session()->flash('type', 'success');
-        }else{
-            session()->flash('notif', 'Data gagal dihapus');
+        } catch (\Throwable $th) {
+            session()->flash('notif', $th->getMessage());
             session()->flash('type', 'error');
         }
         return redirect('admin/admin');
@@ -255,7 +258,7 @@ class AdminController extends Controller
     {
         session()->flash('type', 'info');
         session()->flash('notif', 'Sampai jumpa ' . session('name'));
-        session()->forget(['id', 'name', 'login_status']);
+        session()->forget(['id', 'name', 'level', 'email', 'login_status']);
         return redirect('admin/login');
     }
 }
