@@ -17,12 +17,12 @@ class AdminSeeder extends Seeder
     {
         Admin::insert([
             'name' => 'Erik WIbowo',
-            'email' => 'admin@gmail.com',
+            'email' => 'admin@admin.com',
             'password' => Hash::make('admin'), // password
             'phone' => '081510815414',
             'address' => 'Jalan Pahlawan 51161 Pekalongan Jawa Tengah',
             'photo' => 'profil.jpg',
-            'photo' => 'profil.jpg',
+            'thumb' => 'profil.jpg',
             'level' => "SUPER ADMIN",
             'status' => 1,
             'login_at' => now(),
