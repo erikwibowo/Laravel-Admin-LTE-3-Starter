@@ -15,7 +15,7 @@ class MenuSeeder extends Seeder
     public function run()
     {
         Menu::insert([
-            'menu'  => 'MENU UTAMA',
+            'menu'  => 'MASTER DATA',
             'type'  => 'title',
             'icon'  => null,
             'route' => null,
@@ -29,7 +29,7 @@ class MenuSeeder extends Seeder
             'icon'  => 'fas fa-tachometer-alt',
             'route' => 'admin.dashboard',
             'uri'   => 'dashboard',
-            'urut' => 2,
+            'urut' => 1,
             'created_at' => now()
         ]);
         Menu::insert([
@@ -38,7 +38,7 @@ class MenuSeeder extends Seeder
             'icon'  => 'fas fa-user',
             'route' => 'admin.admin.index',
             'uri'   => 'admin',
-            'urut' => 3,
+            'urut' => 1,
             'created_at' => now()
         ]);
         Menu::insert([
@@ -47,7 +47,7 @@ class MenuSeeder extends Seeder
             'icon'  => 'fas fa-th-list',
             'route' => 'admin.menu.index',
             'uri'   => 'menu',
-            'urut' => 4,
+            'urut' => 1,
             'created_at' => now()
         ]);
     }

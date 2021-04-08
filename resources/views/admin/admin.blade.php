@@ -41,40 +41,14 @@
             serverSide: true,
             ajax: "{{ route('admin.admin.index') }}",
             columns: [
-                {
-                    data: 'photo',
-                    name: 'photo'
-                },
-                {
-                    data: 'name',
-                    name: 'name'
-                },
-                {
-                    data: 'email',
-                    name: 'email'
-                },
-                {
-                    data: 'address',
-                    name: 'address'
-                },
-                {
-                    data: 'level',
-                    name: 'level'
-                },
-                {
-                    data: 'status',
-                    name: 'status'
-                },
-                {
-                    data: 'login_at',
-                    name: 'login_at'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: true
-                },
+                {data: 'photo',},
+                {data: 'name',},
+                {data: 'email',},
+                {data: 'address',},
+                {data: 'level',},
+                {data: 'status',},
+                {data: 'login_at',},
+                {data: 'action', orderable: false, searchable: true },
             ]
         });
     });
